@@ -5,7 +5,7 @@ Description=Shipping Service
 User=roboshop
 // highlight-start
 Environment=CART_ENDPOINT=cart.ankitha.online:8080
-Environment=MYSQL_HOST=mysql.ankitha.online
+Environment=DB_HOST=mysql.ankitha.online
 // highlight-end
 ExecStart=/bin/java -jar /app/shipping.jar
 SyslogIdentifier=shipping
