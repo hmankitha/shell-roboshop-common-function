@@ -7,7 +7,9 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
+SCRIPT_DIR=$PWD
 START_TIME=$(date +%s)
+MONGODB_HOST=mongodb.ankitha.online
 
 mkdir -p $LOGS_FOLDER 
 
@@ -70,7 +72,7 @@ app_setup(){
     mkdir -p /app &>>$LOGS_FILE
     VALIDATE $? "creating app directory"
 
-    curl -o /tmp/$app_name.zip https://$user_name-artifacts.s3.amazonaws.com/$app_name-v3.zip &>>$LOGS_FILE
+    curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/$app_name-v3.zip &>>$LOGS_FILE
     VALIDATE $? "Downloading $app_name code"
 
     cd /app &>>$LOGS_FILE
@@ -80,7 +82,7 @@ app_setup(){
     VALIDATE $? "Removing existing code"
 
     unzip /tmp/$app_name.zip &>>$LOGS_FILE
-    VALIDATE $? "unziping the file"
+    VALIDATE $? "unziping the $app_name code"
 
 
 }
@@ -89,4 +91,9 @@ print_total_time(){
     END_TIME=$(date +%s)
     TOTAL_TIME=$(($END_TIME - $START_TIME))
     echo -e "$(date "+%Y-%m-%d %H:%M:%S") Script execute in: $G $TOTAL_TIME seconds $N" | tee -a $LOGS_FILE
+}
+
+app_restart(){
+    systemctl restart $app_name
+    VALIDATE $? "Restarting $app_name"
 }
