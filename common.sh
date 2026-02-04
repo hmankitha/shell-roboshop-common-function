@@ -59,13 +59,13 @@ systemd_setup(){
 
 app_setup(){
 
-    id $user_name &>>$LOGS_FILE
+    id roboshop &>>$LOGS_FILE
     if [ $? -ne 0 ]; then
 
-        useradd --system --home /app --shell /sbin/nologin --comment "$user_name system user" $user_name
+        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop
         VALIDATE $? "Creating system user"
     else 
-        echo -e "$user_name user already exit ...$Y SKIPPING $N"
+        echo -e "roboshop user already exit ...$Y SKIPPING $N"
     fi
 
 
