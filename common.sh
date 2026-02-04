@@ -1,7 +1,7 @@
 #!/bin/bash
 
 USERID=$(id -u)
-LOGS_FOLDER="/var/log/shell-roboshop"
+LOGS_FOLDER="/var/log/shell-$user_name"
 LOGS_FILE="$LOGS_FOLDER/$0.log"
 R="\e[31m"
 G="\e[32m"
@@ -29,6 +29,60 @@ VALIDATE(){
     else 
         echo -e "$(date "+%Y-%m-%d %H:%M:%S") | $2 ... $G SUCESS $N" | tee -a $LOGS_FILE
     fi    
+}
+
+nodejs_setup(){
+     dnf module disable nodejs -y &>>$LOGS_FILE
+    VALIDATE $? "Disabling Nodejs Default version"
+
+    dnf module enable nodejs:20 -y &>>$LOGS_FILE
+    VALIDATE $? "Enabling NodeJS 20"
+
+    dnf install nodejs -y &>>$LOGS_FILE
+    VALIDATE $? "Install NodeJS"
+
+    npm install &>>$LOGS_FILE
+    VALIDATE $? "installing the build tool"
+}
+
+systemd_setup(){
+    cp $SCRIPT_DIR/$app_name.service /etc/systemd/system/$app_name.service &>>$LOGS_FILE
+    VALIDATE $? "Created systemctl services"
+
+    systemctl daemon-reload &>>$LOGS_FILE
+    systemctl enable $app_name &>>$LOGS_FILE
+    systemctl start $app_name &>>$LOGS_FILE
+    VALIDATE $? "Starting and enabling $app_name"
+}
+
+app_setup(){
+
+    id $user_name &>>$LOGS_FILE
+    if [ $? -ne 0 ]; then
+
+        useradd --system --home /app --shell /sbin/nologin --comment "$user_name system user" $user_name
+        VALIDATE $? "Creating system user"
+    else 
+        echo -e "$user_name user already exit ...$Y SKIPPING $N"
+    fi
+
+
+    mkdir -p /app &>>$LOGS_FILE
+    VALIDATE $? "creating app directory"
+
+    curl -o /tmp/$app_name.zip https://$user_name-artifacts.s3.amazonaws.com/$app_name-v3.zip &>>$LOGS_FILE
+    VALIDATE $? "Downloading $app_name code"
+
+    cd /app &>>$LOGS_FILE
+    VALIDATE $? "Moving to app directory"
+
+    rm -rf /app/*
+    VALIDATE $? "Removing existing code"
+
+    unzip /tmp/$app_name.zip &>>$LOGS_FILE
+    VALIDATE $? "unziping the file"
+
+
 }
 
 print_total_time(){
