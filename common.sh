@@ -10,6 +10,7 @@ N="\e[0m"
 SCRIPT_DIR=$PWD
 START_TIME=$(date +%s)
 MONGODB_HOST=mongodb.ankitha.online
+MYSQL_HOST=mysql.ankitha.online
 
 mkdir -p $LOGS_FOLDER 
 
@@ -58,6 +59,16 @@ java_setup(){
     mv target/$app_name-1.0.jar $app_name.jar 
     VALIDATE $? "Moving and Renaming $app_name"
 }
+
+python_setup(){
+    dnf install python3 gcc python3-devel -y &>>$LOGS_FILE
+    VALIDATE $? "Installing Python"
+
+    cd /app 
+    pip3 install -r requirements.txt &>>$LOGS_FILE
+    VALIDATE $? "Installing dependencies"
+}
+
 
 systemd_setup(){
     cp $SCRIPT_DIR/$app_name.service /etc/systemd/system/$app_name.service &>>$LOGS_FILE
