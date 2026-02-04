@@ -47,6 +47,18 @@ nodejs_setup(){
     VALIDATE $? "installing the build tool"
 }
 
+java_setup(){
+    dnf install maven -y &>>$LOGS_FILE
+    VALIDATE $? "Installing Maven"
+
+    cd /app 
+    mvn clean package &>>$LOGS_FILE
+    VALIDATE $? "Installing and Building $app_name"
+
+    mv target/$app_name-1.0.jar $app_name.jar 
+    VALIDATE $? "Moving and Renaming $app_name"
+}
+
 systemd_setup(){
     cp $SCRIPT_DIR/$app_name.service /etc/systemd/system/$app_name.service &>>$LOGS_FILE
     VALIDATE $? "Created systemctl services"
