@@ -9,7 +9,7 @@ Y="\e[33m"
 N="\e[0m"
 START_TIME=$(date +%s)
 
-echo "Script started executing at: $(date) | tee -a $LOGS_FILE
+echo "Script started executing at: $(date)" | tee -a $LOGS_FILE
 
 check_root(){
 if [ $USERID -ne 0 ]; then
@@ -32,5 +32,5 @@ VALIDATE(){
 print_total_time(){
     END_TIME=$(date +%s)
     TOTAL_TIME=$(($END_TIME - $START_TIME))
-    echo -e "Script execute in: $G $TOTAL_TIME seconds $N"
+    echo -e "$(date "+%Y-%m-%d %H:%M:%S") Script execute in: $G $TOTAL_TIME seconds $N" | tee -a $LOGS_FILE
 }
